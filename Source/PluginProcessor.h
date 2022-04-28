@@ -56,6 +56,7 @@ public:
     
     //Expects us to provide a list of all parameters when it's created. THe last argument is a function
     //that provides that
+    
     //Static as it doens't provide any member variables
     static juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     //Connects GUI elements to processing Variables etc
