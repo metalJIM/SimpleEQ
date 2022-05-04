@@ -63,6 +63,18 @@ public:
     juce::AudioProcessorValueTreeState apvts{ *this, nullptr, "Parameters", createParameterLayout() };
 
 private:
+    //====Set up alias for nested namespaces====
+    
+    //Peak Filter
+    using Filter = juce::dsp::IIR::Filter<float>;
+    //Cutoff Filter - Processes audio in a chain, and we want up to 4 12 dB/Oct filters on our Cutoff Filters
+    using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
+    //Represents the Audio Chain of the whole filter plugin - Low Cut , Peak, then High Cut
+    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
+    //Declare two mono chains for stereo processing
+    MonoChain leftChain, rightChain;
+    
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SimpleEQAudioProcessor)
 };
