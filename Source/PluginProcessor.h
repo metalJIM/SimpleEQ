@@ -28,9 +28,25 @@ struct ChainSettings
 
 ChainSettings getChainSettings(juce::AudioProcessorValueTreeState& apvts);
 
+//====Set up alias for nested namespaces====
+
+    //Peak Filter
+using Filter = juce::dsp::IIR::Filter<float>;
+//Cutoff Filter - Processes audio in a chain, and we want up to 4 12 dB/Oct filters on our Cutoff Filters
+using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
+//Represents the Audio Chain of the whole filter plugin - Low Cut , Peak, then High Cut
+using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
+//Declare two mono chains for stereo processing
+
+enum ChainPositions
+{
+    LowCut,
+    Peak,
+    HighCut
+};
+
 //==============================================================================
-/**
-*/
+
 class SimpleEQAudioProcessor  : public juce::AudioProcessor
 {
 public:
@@ -81,24 +97,9 @@ public:
     juce::AudioProcessorValueTreeState apvts{ *this, nullptr, "Parameters", createParameterLayout() };
 
 private:
-    //====Set up alias for nested namespaces====
     
-    //Peak Filter
-    using Filter = juce::dsp::IIR::Filter<float>;
-    //Cutoff Filter - Processes audio in a chain, and we want up to 4 12 dB/Oct filters on our Cutoff Filters
-    using CutFilter = juce::dsp::ProcessorChain<Filter, Filter, Filter, Filter>;
-    //Represents the Audio Chain of the whole filter plugin - Low Cut , Peak, then High Cut
-    using MonoChain = juce::dsp::ProcessorChain<CutFilter, Filter, CutFilter>;
-    //Declare two mono chains for stereo processing
     MonoChain leftChain, rightChain;
     
-    enum ChainPositions
-    {
-        LowCut,
-        Peak,
-        HighCut
-    };
-
     void updatePeakFilter(const ChainSettings& chainSettings);
     using Coefficients = Filter::CoefficientsPtr;
     //Helper function
