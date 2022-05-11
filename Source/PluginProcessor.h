@@ -18,7 +18,7 @@ enum Slope
     Slope_48
 };
 
-//Data Structure
+//Data Structure to store the values of each parameter 
 struct ChainSettings
 {
     float peakFreq{ 0 }, peakGainInDecibels{ 0 }, peakQuality{ 1.f };
@@ -45,6 +45,11 @@ enum ChainPositions
     HighCut
 };
 
+using Coefficients = Filter::CoefficientsPtr;
+//Helper function
+void updateCoefficients(Coefficients& old, const Coefficients& replacement);
+
+Coefficients makePeakFilter(const ChainSettings& chainSettings, double sampleRate);
 //==============================================================================
 
 class SimpleEQAudioProcessor  : public juce::AudioProcessor
@@ -101,9 +106,6 @@ private:
     MonoChain leftChain, rightChain;
     
     void updatePeakFilter(const ChainSettings& chainSettings);
-    using Coefficients = Filter::CoefficientsPtr;
-    //Helper function
-    static void updateCoefficients(Coefficients& old, const Coefficients& replacement);
 
     //This replaces all the *leftLowCut.template get<0>().coefficients = *cutCoefficients[0] in the switch statement
     //And the setbypassed stuff
